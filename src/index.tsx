@@ -92,15 +92,16 @@ export default function Command() {
   const [searchText, setSearchText] = useState("")
   const { isLoading, data } = useHoogle(searchText)
   const [showDetail, setShowDetail] = useState(false)
+  const items = data || []
 
   return (
     <List
       searchText={searchText}
       onSearchTextChange={setSearchText}
       isLoading={isLoading}
-      isShowingDetail={showDetail}
+      isShowingDetail={showDetail && items.length > 0}
       throttle={true}>
-      {(data || []).map((item, index) => {
+      {items.map((item, index) => {
         const [title, subTitle] = fromHtml(item.item)
         const icon = hoogleIcon(hoogleType(item))
 
