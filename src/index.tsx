@@ -110,21 +110,21 @@ export default function Command() {
         const icon = hoogleIcon(hoogleType(item))
         const accessories = []
 
-        if (item.package.name) {
-          accessories.push({ text: { value: item.package.name } })
+        if (!showDetail) {
+          if (item.package.name) {
+            accessories.push({ text: { value: item.package.name } })
+          }
+
+          if (item.module.name) {
+            accessories.push({ text: { value: item.module.name, color: Color.Orange } })
+          }
         }
-
-        if (item.module.name) {
-          accessories.push({ text: { value: item.module.name, color: Color.Orange } })
-        }
-
-        accessories.push({ icon: icon })
-
 
         return <List.Item
           key={index}
           title={title}
           subtitle={subTitle}
+          icon={icon}
           detail={<List.Item.Detail markdown={toMarkdown(item.docs)} />}
           accessories={accessories}
           actions={
