@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { ActionPanel, Icon, List, Color, Action } from "@raycast/api";
 import { useFetch } from "@raycast/utils";
+import { htmlToMarkdown } from './markdown'
 
 interface HooglePackage {
   name?: string,
@@ -45,28 +46,6 @@ const fromHtml = (html: string): [string, string?] => {
   return [parts[0], parts[1]]
 }
 
-const toMarkdown = (html: string): string =>
-  html
-    .replaceAll("&gt;", ">")
-    .replaceAll("&lt;", "<")
-    .replaceAll("<a>", "*")
-    .replaceAll("</a>", "*")
-    .replaceAll("<b>", "**")
-    .replaceAll("</b>", "**")
-    .replaceAll("<pre>", "```")
-    .replaceAll("</pre>", "```")
-    .replaceAll("<tt>", "`")
-    .replaceAll("</tt>", "`")
-    .replaceAll("<h1>", "# ")
-    .replaceAll("</h1>", "")
-    .replaceAll("<h2>", "## ")
-    .replaceAll("</h2>", "")
-    .replaceAll("<h3>", "### ")
-    .replaceAll("</h3>", "")
-    .replaceAll("<h4>", "#### ")
-    .replaceAll("</h4>", "")
-
-
 const hoogleType = (item: HoogleResult): HoogleType | undefined => {
   switch (item.type) {
     case "package":
@@ -94,7 +73,7 @@ const hoogleIcon = (type: HoogleType | undefined) => {
 }
 
 function Detail(item: HoogleResult) {
-  return <List.Item.Detail markdown={toMarkdown(item.docs)} />
+  return <List.Item.Detail markdown={htmlToMarkdown(item.docs)} />
 }
 
 function Accessories(item: HoogleResult) {
