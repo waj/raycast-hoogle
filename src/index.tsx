@@ -93,6 +93,22 @@ const hoogleIcon = (type: HoogleType | undefined) => {
   }
 }
 
+function Detail(item: HoogleResult) {
+  return <List.Item.Detail markdown={toMarkdown(item.docs)} />
+}
+
+function Accessories(item: HoogleResult) {
+  const accessories = []
+  if (item.package.name) {
+    accessories.push({ text: { value: item.package.name } })
+  }
+
+  if (item.module.name) {
+    accessories.push({ text: { value: item.module.name, color: Color.Orange } })
+  }
+  return accessories
+}
+
 export default function Command() {
   const [searchText, setSearchText] = useState("")
   const { isLoading, data } = useHoogle(searchText)
@@ -108,25 +124,14 @@ export default function Command() {
       {(data || []).map((item, index) => {
         const [title, subTitle] = fromHtml(item.item)
         const icon = hoogleIcon(hoogleType(item))
-        const accessories = []
-
-        if (!showDetail) {
-          if (item.package.name) {
-            accessories.push({ text: { value: item.package.name } })
-          }
-
-          if (item.module.name) {
-            accessories.push({ text: { value: item.module.name, color: Color.Orange } })
-          }
-        }
 
         return <List.Item
           key={index}
           title={title}
           subtitle={subTitle}
           icon={icon}
-          detail={<List.Item.Detail markdown={toMarkdown(item.docs)} />}
-          accessories={accessories}
+          detail={Detail(item)}
+          accessories={showDetail ? null : Accessories(item)}
           actions={
             <ActionPanel>
               <Action.OpenInBrowser url={item.url} />
