@@ -1,50 +1,45 @@
 import { useState } from "react";
 import { ActionPanel, Icon, List, Color, Action } from "@raycast/api";
 import { useFetch } from "@raycast/utils";
-import { htmlToMarkdown } from './markdown'
+import { htmlToMarkdown } from "./markdown";
 
 interface HooglePackage {
-  name?: string,
-  url?: string,
+  name?: string;
+  url?: string;
 }
 
 interface HoogleModule {
-  name?: string,
-  url?: string,
+  name?: string;
+  url?: string;
 }
 
 interface HoogleResult {
-  item: string,
-  docs: string,
-  type: string,
-  package: HooglePackage,
-  module: HoogleModule,
-  url: string,
+  item: string;
+  docs: string;
+  type: string;
+  package: HooglePackage;
+  module: HoogleModule;
+  url: string;
 }
 
 enum HoogleType {
   Package,
   Module,
   Data,
-  Function
+  Function,
 }
 
 const useHoogle = (q: string) => {
-  return useFetch<HoogleResult[]>(
-    `https://hoogle.haskell.org?hoogle=${q}&mode=json`,
-    { execute: q != "" }
-  );
-}
+  return useFetch<HoogleResult[]>(`https://hoogle.haskell.org?hoogle=${q}&mode=json`, { execute: q != "" });
+};
 
 const fromHtml = (html: string): [string, string?] => {
-  const text = html
-    .replaceAll(/<[^>]*>/g, "")
-    .replaceAll("&gt;", ">")
+  const text = html.replaceAll(/<[^>]*>/g, "").replaceAll("&gt;", ">");
 
-  const parts = text.split("::", 2)
+  const parts = text.split("::", 2);
 
-  return [parts[0], parts[1]]
-}
+  return [parts[0], parts[1]];
+};
 
 const hoogleType = (item: HoogleResult): HoogleType | undefined => {
   switch (item.type) {
@@ -57,42 +52,42 @@ const hoogleType = (item: HoogleResult): HoogleType | undefined => {
     default:
       break;
   }
-}
+};
 
 const hoogleIcon = (type: HoogleType | undefined) => {
   switch (type) {
     case HoogleType.Package:
-      return Icon.Box
+      return Icon.Box;
 
     case HoogleType.Module:
-      return Icon.BlankDocument
+      return Icon.BlankDocument;
 
     default:
-      return Icon.Code
+      return Icon.Code;
   }
-}
+};
 
 function Detail(item: HoogleResult) {
-  return <List.Item.Detail markdown={htmlToMarkdown(item.docs)} />
+  return <List.Item.Detail markdown={htmlToMarkdown(item.docs)} />;
 }
 
 function Accessories(item: HoogleResult) {
-  const accessories = []
+  const accessories = [];
   if (item.package.name) {
-    accessories.push({ text: { value: item.package.name } })
+    accessories.push({ text: { value: item.package.name } });
   }
 
   if (item.module.name) {
-    accessories.push({ text: { value: item.module.name, color: Color.Orange } })
+    accessories.push({ text: { value: item.module.name, color: Color.Orange } });
   }
-  return accessories
+  return accessories;
 }
 
 export default function Command() {
-  const [searchText, setSearchText] = useState("")
-  const { isLoading, data } = useHoogle(searchText)
-  const [showDetail, setShowDetail] = useState(false)
-  const items = data || []
+  const [searchText, setSearchText] = useState("");
+  const { isLoading, data } = useHoogle(searchText);
+  const [showDetail, setShowDetail] = useState(false);
+  const items = data || [];
 
   return (
     <List
@@ -100,29 +95,33 @@ export default function Command() {
       onSearchTextChange={setSearchText}
       isLoading={isLoading}
       isShowingDetail={showDetail && items.length > 0}
-      throttle={true}>
+      throttle={true}
+    >
       {items.map((item, index) => {
-        const [title, subTitle] = fromHtml(item.item)
-        const icon = hoogleIcon(hoogleType(item))
+        const [title, subTitle] = fromHtml(item.item);
+        const icon = hoogleIcon(hoogleType(item));
 
-        return <List.Item
-          key={index}
-          title={title}
-          subtitle={subTitle}
-          icon={icon}
-          detail={Detail(item)}
-          accessories={showDetail ? null : Accessories(item)}
-          actions={
-            <ActionPanel>
-              <Action.OpenInBrowser url={item.url} />
-              <Action
-                title="Toggle Docs"
-                icon={Icon.Document}
-                shortcut={{ key: "tab", modifiers: [] }}
-                onAction={() => setShowDetail(!showDetail)} />
-            </ActionPanel>
-          }
-        />
+        return (
+          <List.Item
+            key={index}
+            title={title}
+            subtitle={subTitle}
+            icon={icon}
+            detail={Detail(item)}
+            accessories={showDetail ? null : Accessories(item)}
+            actions={
+              <ActionPanel>
+                <Action.OpenInBrowser url={item.url} />
+                <Action
+                  title="Toggle Docs"
+                  icon={Icon.Document}
+                  shortcut={{ key: "tab", modifiers: [] }}
+                  onAction={() => setShowDetail(!showDetail)}
+                />
+              </ActionPanel>
+            }
+          />
+        );
       })}
     </List>
   );
