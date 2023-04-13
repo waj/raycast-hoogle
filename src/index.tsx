@@ -91,7 +91,7 @@ export default function Command() {
 
         return (
           <List.Item
-            key={index}
+            key={`${searchText}-${index}`}
             title={title}
             subtitle={subTitle}
             icon={icon}
