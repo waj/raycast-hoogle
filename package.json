@@ -6,7 +6,8 @@
   "icon": "haskell.png",
   "author": "waj",
   "categories": [
-    "Developer Tools"
+    "Developer Tools",
+    "Documentation"
   ],
   "license": "MIT",
   "commands": [
