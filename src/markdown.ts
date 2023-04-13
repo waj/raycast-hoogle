@@ -116,3 +116,17 @@ export function htmlToMarkdown(html: string) {
 
   return parts.join("");
 }
+
+export function htmlToText(html: string) {
+  const parts: string[] = [];
+  const handler: Partial<Handler> = {
+    ontext(data) {
+      parts.push(data);
+    },
+  };
+  const parser = new Parser(handler);
+  parser.write(html);
+  parser.end();
+
+  return parts.join("");
+}

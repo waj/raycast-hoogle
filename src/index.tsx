@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { ActionPanel, Icon, List, Color, Action } from "@raycast/api";
 import { useFetch } from "@raycast/utils";
-import { htmlToMarkdown } from "./markdown";
+import { htmlToMarkdown, htmlToText } from "./markdown";
 
 interface HooglePackage {
   name?: string;
@@ -33,12 +33,20 @@ const useHoogle = (q: string) => {
   return useFetch<HoogleResult[]>(`https://hoogle.haskell.org?hoogle=${q}&mode=json`, { execute: q != "" });
 };
 
-const fromHtml = (html: string): [string, string?] => {
-  const text = html.replaceAll(/<[^>]*>/g, "").replaceAll("&gt;", ">");
+const titleAndSubtitle = (item: HoogleResult): [string, string?] => {
+  const text = htmlToText(item.item);
 
-  const parts = text.split("::", 2);
+  if (item.type == "package" || item.type == "module") {
+    return [text];
+  }
 
-  return [parts[0], parts[1]];
+  const parts = text.split(" ");
+
+  if (parts[1] == "::") {
+    return [parts[0], parts.slice(1).join(" ")];
+  }
+
+  return [text];
 };
 
 const hoogleType = (item: HoogleResult): HoogleType | undefined => {
@@ -98,7 +106,7 @@ export default function Command() {
       throttle={true}
     >
       {items.map((item, index) => {
-        const [title, subTitle] = fromHtml(item.item);
+        const [title, subTitle] = titleAndSubtitle(item);
         const icon = hoogleIcon(hoogleType(item));
 
         return (
