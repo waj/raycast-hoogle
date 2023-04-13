@@ -1,32 +1,9 @@
 import { useState } from "react";
 import { ActionPanel, Icon, List, Color, Action } from "@raycast/api";
-import { useFetch } from "@raycast/utils";
+import { useHoogle, Result } from "./hoogle";
 import { htmlToMarkdown, htmlToText } from "./markdown";
 
-interface HooglePackage {
-  name?: string;
-  url?: string;
-}
-
-interface HoogleModule {
-  name?: string;
-  url?: string;
-}
-
-interface HoogleResult {
-  item: string;
-  docs: string;
-  type: string;
-  package: HooglePackage;
-  module: HoogleModule;
-  url: string;
-}
-
-const useHoogle = (q: string) => {
-  return useFetch<HoogleResult[]>(`https://hoogle.haskell.org?hoogle=${q}&mode=json`, { execute: q != "" });
-};
-
-const titleAndSubtitle = (item: HoogleResult): [string, string?] => {
+const titleAndSubtitle = (item: Result): [string, string?] => {
   const text = htmlToText(item.item);
 
   if (item.type == "package" || item.type == "module") {
@@ -42,7 +19,7 @@ const titleAndSubtitle = (item: HoogleResult): [string, string?] => {
   return [text];
 };
 
-const hoogleIcon = (item: HoogleResult) => {
+const hoogleIcon = (item: Result) => {
   switch (item.type) {
     case "package":
       return Icon.Box;
@@ -55,11 +32,11 @@ const hoogleIcon = (item: HoogleResult) => {
   }
 };
 
-function Detail(item: HoogleResult) {
+function Detail(item: Result) {
   return <List.Item.Detail markdown={htmlToMarkdown(item.docs)} />;
 }
 
-function Accessories(item: HoogleResult) {
+function Accessories(item: Result) {
   const accessories = [];
   if (item.package.name) {
     accessories.push({ text: { value: item.package.name } });
