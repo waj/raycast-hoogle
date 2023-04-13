@@ -3,7 +3,7 @@
   "name": "hoogle",
   "title": "Hoogle",
   "description": "Search Haskell documentation in Hoogle",
-  "icon": "command-icon.png",
+  "icon": "haskell.png",
   "author": "waj",
   "categories": [
     "Developer Tools"
