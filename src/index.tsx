@@ -22,13 +22,6 @@ interface HoogleResult {
   url: string;
 }
 
-enum HoogleType {
-  Package,
-  Module,
-  Data,
-  Function,
-}
-
 const useHoogle = (q: string) => {
   return useFetch<HoogleResult[]>(`https://hoogle.haskell.org?hoogle=${q}&mode=json`, { execute: q != "" });
 };
@@ -49,29 +42,16 @@ const titleAndSubtitle = (item: HoogleResult): [string, string?] => {
   return [text];
 };
 
-const hoogleType = (item: HoogleResult): HoogleType | undefined => {
+const hoogleIcon = (item: HoogleResult) => {
   switch (item.type) {
     case "package":
-      return HoogleType.Package;
-
-    case "module":
-      return HoogleType.Module;
-
-    default:
-      break;
-  }
-};
-
-const hoogleIcon = (type: HoogleType | undefined) => {
-  switch (type) {
-    case HoogleType.Package:
       return Icon.Box;
 
-    case HoogleType.Module:
+    case "module":
       return Icon.BlankDocument;
 
     default:
-      return Icon.Code;
+      return Icon.Hashtag;
   }
 };
 
@@ -107,7 +87,7 @@ export default function Command() {
     >
       {items.map((item, index) => {
         const [title, subTitle] = titleAndSubtitle(item);
-        const icon = hoogleIcon(hoogleType(item));
+        const icon = hoogleIcon(item);
 
         return (
           <List.Item
