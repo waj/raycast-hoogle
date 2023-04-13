@@ -1,4 +1,5 @@
 import { useFetch } from "@raycast/utils";
+import { URLSearchParams } from "url";
 
 export interface Package {
   name?: string;
@@ -20,5 +21,8 @@ export interface Result {
 }
 
 export const useHoogle = (q: string) => {
-  return useFetch<Result[]>(`https://hoogle.haskell.org?hoogle=${q}&mode=json`, { execute: q != "" });
+  const params = new URLSearchParams();
+  params.append("hoogle", q);
+  params.append("mode", "json");
+  return useFetch<Result[]>(`https://hoogle.haskell.org?${params.toString()}`, { execute: q != "" });
 };
