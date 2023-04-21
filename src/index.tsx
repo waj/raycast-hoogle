@@ -80,7 +80,7 @@ export default function Command() {
                 <Action
                   title="Toggle Docs"
                   icon={Icon.Document}
-                  shortcut={{ key: "tab", modifiers: [] }}
+                  shortcut={{ key: "d", modifiers: ["cmd", "shift"] }}
                   onAction={() => setShowDetail(!showDetail)}
                 />
               </ActionPanel>
